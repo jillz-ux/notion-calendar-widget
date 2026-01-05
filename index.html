@@ -7,7 +7,7 @@
 
   <style>
     :root{
-      --bg: #ffffff;             /* blend into Notion */
+      --bg: #ffffff;             /* blends into Notion */
       --card: #ffffff;
       --text: #2f2a22;
       --muted: #7a7367;
@@ -15,12 +15,14 @@
       --line: rgba(47,42,34,0.08);
       --soft: rgba(47,42,34,0.05);
 
-      --accent: #e8dfd2;         /* light beige outline */
+      --beige: #f2ede4;          /* light beige fill */
+      --beige-2: #e8dfd2;        /* slightly deeper beige (borders) */
+
       --radius: 16px;
 
-      /* Size controls (make smaller here) */
-      --calendar-width: 290px;   /* was ~330 */
-      --cell-size: 34px;         /* day box size */
+      /* Size controls */
+      --calendar-width: 290px;
+      --cell-size: 34px;
     }
 
     * { box-sizing: border-box; }
@@ -33,12 +35,11 @@
       color: var(--text);
     }
 
-    /* Container */
     #calendari {
       width: var(--calendar-width);
       background: var(--bg);
-      padding: 0;               /* no beige margin around */
       margin: 0;
+      padding: 0;
     }
 
     table {
@@ -49,22 +50,24 @@
       border: 1px solid var(--soft);
       border-radius: var(--radius);
       overflow: hidden;
-      box-shadow: none;         /* blends more in Notion */
+      box-shadow: none;         /* clean inside Notion */
     }
 
     th, td { text-align: center; }
 
     /* Title row */
-    .cal-title {
+    .cal-title{
       padding: 12px 10px 10px;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 650;
       position: relative;
       border-bottom: 1px solid var(--soft);
-      background: var(--card);
+
+      /* NEW: subtle beige header background */
+      background: linear-gradient(180deg, var(--beige), #fff);
     }
 
-    .cal-title .year {
+    .cal-title .year{
       display: block;
       font-size: 12px;
       font-weight: 500;
@@ -72,7 +75,7 @@
       margin-top: 2px;
     }
 
-    /* Weekday header */
+    /* Weekday header row */
     .dow th{
       padding: 8px 0;
       font-size: 11px;
@@ -82,7 +85,6 @@
       background: var(--card);
     }
 
-    /* Day cells */
     td {
       padding: 0;
       border-bottom: 1px solid var(--soft);
@@ -108,23 +110,23 @@
       opacity: 0.28;
     }
 
-    /* Today: ONLY an outlined box */
+    /* NEW: Today filled beige */
     td.avui > span{
-      border-color: var(--accent);
-      background: transparent;
-      font-weight: 700;
+      background: var(--beige);
+      border-color: var(--beige-2);
+      font-weight: 750;
     }
 
-    /* Optional: subtle hover */
+    /* Subtle hover */
     td > span:hover{
-      border-color: rgba(232,223,210,0.7);
+      border-color: rgba(232,223,210,0.9);
     }
 
-    /* Nav buttons */
+    /* Nav buttons (stay white) */
     .nav-btn{
       appearance: none;
       border: 1px solid var(--soft);
-      background: #fff;
+      background: #fff;         /* keep arrows white */
       width: 28px;
       height: 28px;
       border-radius: 999px;
@@ -134,10 +136,11 @@
       cursor: pointer;
       position: absolute;
       top: 10px;
+      color: var(--text);
     }
 
     .nav-btn:hover{
-      border-color: rgba(232,223,210,0.9);
+      border-color: rgba(232,223,210,0.95);
     }
 
     .prev { left: 10px; }
@@ -168,10 +171,9 @@
       const year = viewDate.getFullYear();
       const month = viewDate.getMonth();
 
-      // First day of month
       const firstOfMonth = new Date(year, month, 1);
 
-      // Start on the Sunday of the week containing the 1st
+      // Start on Sunday of the week containing the 1st
       const start = new Date(firstOfMonth);
       start.setDate(firstOfMonth.getDate() - firstOfMonth.getDay());
 
@@ -194,15 +196,8 @@
       const titleWrap = document.createElement('div');
       titleWrap.innerHTML = `${MONTHS[month]}<span class="year">${year}</span>`;
 
-      prevBtn.onclick = () => {
-        const newDate = new Date(year, month - 1, 1);
-        renderCalendar(container, newDate);
-      };
-
-      nextBtn.onclick = () => {
-        const newDate = new Date(year, month + 1, 1);
-        renderCalendar(container, newDate);
-      };
+      prevBtn.onclick = () => renderCalendar(container, new Date(year, month - 1, 1));
+      nextBtn.onclick = () => renderCalendar(container, new Date(year, month + 1, 1));
 
       titleTh.appendChild(prevBtn);
       titleTh.appendChild(titleWrap);
@@ -210,7 +205,7 @@
       titleRow.appendChild(titleTh);
       table.appendChild(titleRow);
 
-      // DOW header row (Su -> Sa)
+      // Weekday header
       const dowRow = document.createElement('tr');
       dowRow.className = 'dow';
       for (let i = 0; i < 7; i++){
@@ -220,7 +215,7 @@
       }
       table.appendChild(dowRow);
 
-      // 6 weeks grid
+      // 6-week grid
       const cursor = new Date(start);
       for (let w = 0; w < 6; w++){
         const tr = document.createElement('tr');
@@ -230,10 +225,7 @@
           const span = document.createElement('span');
           span.textContent = cursor.getDate();
 
-          // outside current month
           if (cursor.getMonth() !== month) td.className = 'fora';
-
-          // today outline (true today, not "selected date")
           if (sameDay(cursor, today)) td.className = 'avui';
 
           td.appendChild(span);
@@ -252,4 +244,3 @@
   </script>
 </body>
 </html>
-
