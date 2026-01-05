@@ -6,22 +6,25 @@
   <title>Notion Calendar</title>
 
   <style>
-   :root{
-  --bg: #ffffff;
-  --card: #ffffff;
-  --text: #2f2a22;
-  --muted: #7a7367;
-  --soft: rgba(47,42,34,0.05);
+    :root{
+      /* Core neutrals */
+      --bg: #ffffff;
+      --card: #ffffff;
+      --text: #2f2a22;
+      --muted: #7a7367;
+      --soft: rgba(47,42,34,0.04);
 
-  /* Cohesive “latte” palette */
-  --header-beige: #f6f1e9;   /* very light oat */
-  --today-beige:  #efe6d9;   /* slightly deeper oat */
-  --beige-border: #e3d6c4;   /* soft warm outline */
+      /* ONE cozy base tone (everything derives from this) */
+      --cozy-base: #eee4d6;     /* warm oat / latte */
+      --cozy-light: #f7f2ec;    /* header wash */
+      --cozy-border: #e6d8c4;   /* barely-there outline */
 
-  --radius: 16px;
-  --calendar-width: 275px;
-  --cell-size: 34px;
-}
+      --radius: 16px;
+
+      /* Size */
+      --calendar-width: 275px;
+      --cell-size: 34px;
+    }
 
     * { box-sizing: border-box; }
 
@@ -36,8 +39,6 @@
     #calendari {
       width: var(--calendar-width);
       background: var(--bg);
-      margin: 0;
-      padding: 0;
     }
 
     table {
@@ -48,7 +49,7 @@
       border: 1px solid var(--soft);
       border-radius: var(--radius);
       overflow: hidden;
-      box-shadow: none; /* blends into Notion */
+      box-shadow: none;
     }
 
     th, td { text-align: center; }
@@ -57,10 +58,10 @@
     .cal-title{
       padding: 12px 10px 10px;
       font-size: 14px;
-      font-weight: 650;
+      font-weight: 600;
       position: relative;
       border-bottom: 1px solid var(--soft);
-      background: var(--header-beige);
+      background: var(--cozy-light);
     }
 
     .cal-title .year{
@@ -71,11 +72,11 @@
       margin-top: 2px;
     }
 
-    /* Nav buttons (keep white) */
+    /* Navigation */
     .nav-btn{
       appearance: none;
       border: 1px solid var(--soft);
-      background: #fff; /* arrows stay white */
+      background: #fff;
       width: 28px;
       height: 28px;
       border-radius: 999px;
@@ -87,14 +88,15 @@
       top: 10px;
       color: var(--text);
     }
+
     .prev { left: 10px; }
     .next { right: 10px; }
 
     .nav-btn:hover{
-      border-color: var(--beige-border);
+      border-color: var(--cozy-border);
     }
 
-    /* Days of week */
+    /* Weekdays */
     .dow th{
       padding: 8px 0;
       font-size: 11px;
@@ -109,6 +111,7 @@
       padding: 0;
       border-bottom: 1px solid var(--soft);
     }
+
     tr:last-child td { border-bottom: none; }
 
     td > span{
@@ -124,20 +127,21 @@
       color: var(--text);
     }
 
+    /* Outside month */
     td.fora > span{
-      opacity: 0.28;
+      opacity: 0.25;
     }
 
-    /* Today filled */
+    /* Today — soft, cozy emphasis */
     td.avui > span{
-      background: var(--today-beige);
-      border-color: var(--beige-border);
+      background: var(--cozy-base);
+      border-color: var(--cozy-border);
       font-weight: 700;
     }
 
-    /* Subtle hover */
+    /* Gentle hover */
     td > span:hover{
-      border-color: var(--beige-border);
+      border-color: var(--cozy-border);
     }
   </style>
 </head>
@@ -166,14 +170,12 @@
       const month = viewDate.getMonth();
 
       const firstOfMonth = new Date(year, month, 1);
-
-      // Start on Sunday of the week containing the 1st
       const start = new Date(firstOfMonth);
       start.setDate(firstOfMonth.getDate() - firstOfMonth.getDay());
 
       const table = document.createElement('table');
 
-      // Header row
+      /* Header */
       const titleRow = document.createElement('tr');
       const titleTh = document.createElement('th');
       titleTh.className = 'cal-title';
@@ -199,7 +201,7 @@
       titleRow.appendChild(titleTh);
       table.appendChild(titleRow);
 
-      // Days-of-week header (Su -> Sa)
+      /* DOW */
       const dowRow = document.createElement('tr');
       dowRow.className = 'dow';
       DOW.forEach(d => {
@@ -209,7 +211,7 @@
       });
       table.appendChild(dowRow);
 
-      // 6-week grid (safe for all months)
+      /* 6-week grid */
       const cursor = new Date(start);
       for (let w = 0; w < 6; w++){
         const tr = document.createElement('tr');
@@ -227,7 +229,6 @@
 
           cursor.setDate(cursor.getDate() + 1);
         }
-
         table.appendChild(tr);
       }
 
@@ -238,4 +239,3 @@
   </script>
 </body>
 </html>
-
