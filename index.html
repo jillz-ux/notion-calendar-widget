@@ -7,21 +7,22 @@
 
   <style>
     :root{
-      --bg: #ffffff;             /* blends into Notion */
+      --bg: #ffffff;
       --card: #ffffff;
       --text: #2f2a22;
       --muted: #7a7367;
 
-      --line: rgba(47,42,34,0.08);
       --soft: rgba(47,42,34,0.05);
 
-      --beige: #f2ede4;          /* light beige fill */
-      --beige-2: #e8dfd2;        /* slightly deeper beige (borders) */
+      /* Beige palette */
+      --today-beige: #f2ede4;     /* filled highlight for today */
+      --header-beige: #efe6ea;    /* slightly pinky / mauve beige header */
+      --beige-border: #e4d7dd;    /* soft border that matches header tone */
 
       --radius: 16px;
 
       /* Size controls */
-      --calendar-width: 290px;
+      --calendar-width: 275px;    /* ~5% smaller than 290px */
       --cell-size: 34px;
     }
 
@@ -50,21 +51,19 @@
       border: 1px solid var(--soft);
       border-radius: var(--radius);
       overflow: hidden;
-      box-shadow: none;         /* clean inside Notion */
+      box-shadow: none; /* blends into Notion */
     }
 
     th, td { text-align: center; }
 
-    /* Title row */
+    /* Header */
     .cal-title{
       padding: 12px 10px 10px;
       font-size: 14px;
       font-weight: 650;
       position: relative;
       border-bottom: 1px solid var(--soft);
-
-      /* NEW: subtle beige header background */
-      background: linear-gradient(180deg, var(--beige), #fff);
+      background: var(--header-beige);
     }
 
     .cal-title .year{
@@ -75,58 +74,11 @@
       margin-top: 2px;
     }
 
-    /* Weekday header row */
-    .dow th{
-      padding: 8px 0;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted);
-      border-bottom: 1px solid var(--soft);
-      background: var(--card);
-    }
-
-    td {
-      padding: 0;
-      border-bottom: 1px solid var(--soft);
-    }
-
-    tr:last-child td { border-bottom: none; }
-
-    td > span{
-      display: grid;
-      place-items: center;
-      width: var(--cell-size);
-      height: var(--cell-size);
-      margin: 6px auto;
-      border-radius: 10px;
-      border: 1px solid transparent;
-      color: var(--text);
-      font-size: 13px;
-      line-height: 1;
-    }
-
-    /* Outside month */
-    td.fora > span{
-      opacity: 0.28;
-    }
-
-    /* NEW: Today filled beige */
-    td.avui > span{
-      background: var(--beige);
-      border-color: var(--beige-2);
-      font-weight: 750;
-    }
-
-    /* Subtle hover */
-    td > span:hover{
-      border-color: rgba(232,223,210,0.9);
-    }
-
-    /* Nav buttons (stay white) */
+    /* Nav buttons (keep white) */
     .nav-btn{
       appearance: none;
       border: 1px solid var(--soft);
-      background: #fff;         /* keep arrows white */
+      background: #fff; /* arrows stay white */
       width: 28px;
       height: 28px;
       border-radius: 999px;
@@ -138,13 +90,58 @@
       top: 10px;
       color: var(--text);
     }
-
-    .nav-btn:hover{
-      border-color: rgba(232,223,210,0.95);
-    }
-
     .prev { left: 10px; }
     .next { right: 10px; }
+
+    .nav-btn:hover{
+      border-color: var(--beige-border);
+    }
+
+    /* Days of week */
+    .dow th{
+      padding: 8px 0;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      border-bottom: 1px solid var(--soft);
+      background: var(--card);
+    }
+
+    /* Grid */
+    td {
+      padding: 0;
+      border-bottom: 1px solid var(--soft);
+    }
+    tr:last-child td { border-bottom: none; }
+
+    td > span{
+      display: grid;
+      place-items: center;
+      width: var(--cell-size);
+      height: var(--cell-size);
+      margin: 6px auto;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      font-size: 13px;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    td.fora > span{
+      opacity: 0.28;
+    }
+
+    /* Today filled */
+    td.avui > span{
+      background: var(--today-beige);
+      border-color: var(--beige-border);
+      font-weight: 700;
+    }
+
+    /* Subtle hover */
+    td > span:hover{
+      border-color: var(--beige-border);
+    }
   </style>
 </head>
 
@@ -179,7 +176,7 @@
 
       const table = document.createElement('table');
 
-      // Title row
+      // Header row
       const titleRow = document.createElement('tr');
       const titleTh = document.createElement('th');
       titleTh.className = 'cal-title';
@@ -205,17 +202,17 @@
       titleRow.appendChild(titleTh);
       table.appendChild(titleRow);
 
-      // Weekday header
+      // Days-of-week header (Su -> Sa)
       const dowRow = document.createElement('tr');
       dowRow.className = 'dow';
-      for (let i = 0; i < 7; i++){
+      DOW.forEach(d => {
         const th = document.createElement('th');
-        th.textContent = DOW[i];
+        th.textContent = d;
         dowRow.appendChild(th);
-      }
+      });
       table.appendChild(dowRow);
 
-      // 6-week grid
+      // 6-week grid (safe for all months)
       const cursor = new Date(start);
       for (let w = 0; w < 6; w++){
         const tr = document.createElement('tr');
@@ -244,3 +241,4 @@
   </script>
 </body>
 </html>
+
